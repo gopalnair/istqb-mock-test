@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISTQB Foundation Level Mock Test</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .setup-section {
+            margin-bottom: 25px;
+        }
+
+        .setup-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .topic-btn, .difficulty-btn {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            text-align: left;
+        }
+
+        .topic-btn:hover, .difficulty-btn:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .topic-btn.selected, .difficulty-btn.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .difficulty-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .question-count {
+            margin-top: 15px;
+        }
+
+        .question-count label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .question-count input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .start-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .start-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .progress-info {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .timer {
+            background: #f0f0f0;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .question-card {
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .option.correct {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .option.incorrect {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .nav-btn.secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-card {
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            margin: 30px auto;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .score-circle.pass {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .score-circle.fail {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat {
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #667eea;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .explanation {
+            background: #f0f9ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        .explanation-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .badge.beginner {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge.intermediate {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge.advanced {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .difficulty-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .score-circle {
+                width: 150px;
+                height: 150px;
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Question Bank - Organized by topic and difficulty
+        const questionBank = {
+            "Fundamentals of Testing": {
+                beginner: [
+                    {
+                        question: "What is the primary objective of software testing?",
+                        options: [
+                            "To prove that the software has no defects",
+                            "To find as many defects as possible",
+                            "To provide information about the quality of the software",
+                            "To verify that all requirements are implemented"
+                        ],
+                        correct: 2,
+                        explanation: "The primary objective of testing is to provide information about software quality and reduce risk, not to prove perfection or just find defects."
+                    },
+                    {
+                        question: "Which testing principle states that testing everything is not feasible?",
+                        options: [
+                            "Early testing saves time and money",
+                            "Exhaustive testing is impossible",
+                            "Defects cluster together",
+                            "Testing shows presence of defects"
+                        ],
+                        correct: 1,
+                        explanation: "Exhaustive testing is impossible - testing everything (all combinations of inputs and preconditions) is not feasible except for trivial cases."
+                    },
+                    {
+                        question: "What is the difference between an error and a defect?",
+                        options: [
+                            "There is no difference; they are the same thing",
+                            "An error is a human mistake, a defect is a flaw in code",
+                            "An error occurs during testing, a defect during development",
+                            "An error is minor, a defect is major"
+                        ],
+                        correct: 1,
+                        explanation: "An error (mistake) is made by a human, which may produce a defect (fault/bug) in the code or documentation."
+                    },
+                    {
+                        question: "Which of the following is NOT a typical test objective?",
+                        options: [
+                            "Finding defects",
+                            "Gaining confidence in quality",
+                            "Preventing defects",
+                            "Proving the software is defect-free"
+                        ],
+                        correct: 3,
+                        explanation: "Testing cannot prove that software is defect-free. Testing shows the presence of defects, not their absence."
+                    },
+                    {
+                        question: "What is a failure?",
+                        options: [
+                            "A human mistake during development",
+                            "A flaw in the code",
+                            "An event where the system does not perform as expected",
+                            "A missing requirement"
+                        ],
+                        correct: 2,
+                        explanation: "A failure is an event in which a component or system does not perform a required function within specified limits."
+                    }
+                ],
+                intermediate: [
+                    {
+                        question: "According to the 'defects cluster together' principle, what should testers do?",
+                        options: [
+                            "Test all modules equally",
+                            "Focus testing effort on modules where defects are likely to cluster",
+                            "Ignore modules with many defects",
+                            "Only test new modules"
+                        ],
+                        correct: 1,
+                        explanation: "The Pareto principle suggests that a small number of modules contain most defects. Testing should focus on these high-risk areas."
+                    },
+                    {
+                        question: "What does the 'pesticide paradox' refer to in testing?",
+                        options: [
+                            "Testing becomes expensive over time",
+                            "The same tests repeated will eventually find no new defects",
+                            "Defects multiply if not fixed quickly",
+                            "Automated tests are less effective than manual tests"
+                        ],
+                        correct: 1,
+                        explanation: "The pesticide paradox states that if the same tests are repeated, eventually they will find no new defects. Tests need to be reviewed and revised regularly."
+                    },
+                    {
+                        question: "Which is true about the relationship between testing and quality assurance?",
+                        options: [
+                            "Testing and QA are the same thing",
+                            "Testing is part of quality assurance",
+                            "QA is part of testing",
+                            "Testing and QA are unrelated"
+                        ],
+                        correct: 1,
+                        explanation: "Testing is a form of quality control (QC), while quality assurance (QA) is focused on process. Testing contributes to achieving quality but is not the same as QA."
+                    }
+                ],
+                advanced: [
+                    {
+                        question: "A system fails during production. Root cause analysis reveals a requirements error. Which statement is most accurate?",
+                        options: [
+                            "Testing failed because it should have found this defect",
+                            "The defect originated in requirements but manifested as a design/code defect",
+                            "This is a test process defect, not a development defect",
+                            "Requirements errors cannot be found through testing"
+                        ],
+                        correct: 1,
+                        explanation: "Errors in early work products (like requirements) propagate to later work products. Testing at appropriate levels should detect these, but they originate from the requirements phase."
+                    },
+                    {
+                        question: "How does context affect testing objectives?",
+                        options: [
+                            "Context has no impact on test objectives",
+                            "Test objectives vary based on work product, test level, risks, SDLC, and business context",
+                            "Test objectives are always the same regardless of context",
+                            "Only the SDLC affects test objectives"
+                        ],
+                        correct: 1,
+                        explanation: "Testing objectives vary depending on multiple contextual factors including the work product, test level, identified risks, SDLC methodology, and business factors."
+                    }
+                ]
+            },
+            "Testing Throughout the SDLC": {
+                beginner: [
+                    {
+                        question: "Which test level focuses on interactions between components?",
+                        options: [
+                            "Unit testing",
+                            "Integration testing",
+                            "System testing",
+                            "Acceptance testing"
+                        ],
+                        correct: 1,
+                        explanation: "Integration testing focuses on testing the interactions and interfaces between components or systems."
+                    },
+                    {
+                        question: "What is the main focus of system testing?",
+                        options: [
+                            "Testing individual components",
+                            "Testing the behavior and capabilities of the whole system",
+                            "Testing user acceptance",
+                            "Testing component interfaces"
+                        ],
+                        correct: 1,
+                        explanation: "System testing focuses on the behavior and capabilities of a whole system or product."
+                    },
+                    {
+                        question: "Which type of testing verifies that the system meets business needs?",
+                        options: [
+                            "Component testing",
+                            "System testing",
+                            "Acceptance testing",
+                            "Integration testing"
+                        ],
+                        correct: 2,
+                        explanation: "Acceptance testing focuses on validation, determining whether the system meets business needs and is acceptable for delivery."
+                    },
+                    {
+                        question: "What is regression testing?",
+                        options: [
+                            "Testing new features only",
+                            "Re-testing after defect fixes to confirm unchanged areas still work",
+                            "Testing that goes backwards through the SDLC",
+                            "Testing performed by regression analysts"
+                        ],
+                        correct: 1,
+                        explanation: "Regression testing confirms that modifications have not adversely affected existing functionality and that unchanged areas still work correctly."
+                    }
+                ],
+                intermediate: [
+                    {
+                        question: "In a DevOps environment, what is shift-left testing?",
+                        options: [
+                            "Moving testers to a different team",
+                            "Performing testing activities earlier in the SDLC",
+                            "Testing only on the left side of the screen",
+                            "Reducing the number of tests"
+                        ],
+                        correct: 1,
+                        explanation: "Shift-left approach suggests testing activities should be performed earlier in the SDLC to find and fix defects when they are cheaper to address."
+                    },
+                    {
+                        question: "What is maintenance testing primarily concerned with?",
+                        options: [
+                            "Testing during the initial development",
+                            "Testing modifications and migrations in operational systems",
+                            "Testing the maintenance team's work",
+                            "Testing hardware maintenance"
+                        ],
+                        correct: 1,
+                        explanation: "Maintenance testing is performed on modifications, migrations, and retirement of operational systems."
+                    },
+                    {
+                        question: "Which statement about test levels is correct?",
+                        options: [
+                            "Test levels must be performed sequentially",
+                            "Test levels can overlap in time",
+                            "Each test level requires different people",
+                            "Test levels are only for waterfall projects"
+                        ],
+                        correct: 1,
+                        explanation: "Test levels may overlap in time and can be performed in parallel, especially in iterative and agile development approaches."
+                    }
+                ],
+                advanced: [
+                    {
+                        question: "How does the SDLC model impact testing?",
+                        options: [
+                            "The SDLC model has no impact on testing",
+                            "The SDLC model influences test approach, timing, scope, and test levels",
+                            "All SDLC models require the same testing approach",
+                            "Only waterfall models impact testing"
+                        ],
+                        correct: 1,
+                        explanation: "The choice of SDLC model impacts many aspects of testing including when testing activities occur, what test levels are needed, test approach, and degree of formality."
+                    }
+                ]
+            },
+            "Static Testing": {
+                beginner: [
+                    {
+                        question: "What is static testing?",
+                        options: [
+                            "Testing that requires test environment setup",
+                            "Testing by examining work products without executing code",
+                            "Testing that never changes",
+                            "Testing performed by static analysis tools only"
+                        ],
+                        correct: 1,
+                        explanation: "Static testing involves examining work products (requirements, design, code) without executing the software."
+                    },
+                    {
+                        question: "Which of the following can be examined using static testing?",
+                        options: [
+                            "Only source code",
+                            "Only requirements documents",
+                            "Requirements, design, code, test plans, and other work products",
+                            "Only defects found during execution"
+                        ],
+                        correct: 2,
+                        explanation: "Static testing can be applied to almost any work product including requirements, design specs, code, test cases, user guides, and contracts."
+                    },
+                    {
+                        question: "What is a code review?",
+                        options: [
+                            "Running code to find defects",
+                            "A systematic examination of code by people",
+                            "An automated code analysis",
+                            "A review of code comments only"
+                        ],
+                        correct: 1,
+                        explanation: "A code review is a type of static testing where code is examined by one or more people, typically without executing it."
+                    }
+                ],
+                intermediate: [
+                    {
+                        question: "What is the main difference between an informal review and a formal review?",
+                        options: [
+                            "Informal reviews are done individually, formal reviews in groups",
+                            "Formal reviews follow a defined process with documented outcomes",
+                            "Informal reviews are faster",
+                            "Formal reviews are always better"
+                        ],
+                        correct: 1,
+                        explanation: "Formal reviews follow a defined process, have specific roles, and produce documented results. Informal reviews are less structured."
+                    },
+                    {
+                        question: "Which role in a formal review is responsible for moderating the review meeting?",
+                        options: [
+                            "Author",
+                            "Reviewer",
+                            "Facilitator/Moderator",
+                            "Manager"
+                        ],
+                        correct: 2,
+                        explanation: "The facilitator (moderator) leads the review meeting, mediates between points of view, and ensures the review is conducted effectively."
+                    },
+                    {
+                        question: "What is static analysis?",
+                        options: [
+                            "Analysis of requirements",
+                            "Automated analysis of code without execution",
+                            "Analysis that never changes",
+                            "Manual code review"
+                        ],
+                        correct: 1,
+                        explanation: "Static analysis is automated analysis of code (or other work products) without executing them, typically using specialized tools."
+                    }
+                ],
+                advanced: [
+                    {
+                        question: "Which review type is most formal and has the highest defect detection rate?",
+                        options: [
+                            "Walkthrough",
+                            "Technical review",
+                            "Inspection",
+                            "Informal review"
+                        ],
+                        correct: 2,
+                        explanation: "Inspection is the most formal review type, led by a trained moderator, with defined roles and metrics collection, typically achieving the highest defect detection rates."
+                    }
+                ]
+            },
+            "Test Analysis and Design": {
+                beginner: [
+                    {
+                        question: "What is equivalence partitioning?",
+                        options: [
+                            "Dividing test cases equally among testers",
+                            "Dividing input data into partitions that should be treated the same",
+                            "Partitioning the test environment",
+                            "Dividing the project into equal phases"
+                        ],
+                        correct: 1,
+                        explanation: "Equivalence partitioning divides input data into partitions (classes) where all values in a partition are expected to be processed the same way."
+                    },
+                    {
+                        question: "What is boundary value analysis?",
+                        options: [
+                            "Testing at the boundaries of equivalence partitions",
+                            "Testing the system boundaries",
+                            "Testing the project boundaries",
+                            "Testing boundary conditions in code"
+                        ],
+                        correct: 0,
+                        explanation: "Boundary value analysis (BVA) focuses on testing at the boundaries between equivalence partitions, where defects often occur."
+                    },
+                    {
+                        question: "Decision table testing is most effective for testing:",
+                        options: [
+                            "System performance",
+                            "Complex business rules with multiple conditions",
+                            "User interface layout",
+                            "Code coverage"
+                        ],
+                        correct: 1,
+                        explanation: "Decision tables are effective for testing systems with complex business rules that involve multiple conditions and corresponding actions."
+                    },
+                    {
+                        question: "What is exploratory testing?",
+                        options: [
+                            "Testing without any planning",
+                            "Informal testing by exploring the application",
+                            "Simultaneous learning, test design, and execution",
+                            "Testing new features only"
+                        ],
+                        correct: 2,
+                        explanation: "Exploratory testing is an approach where test design and execution happen simultaneously, with learning informing the next testing steps."
+                    }
+                ],
+                intermediate: [
+                    {
+                        question: "Which test technique would be best for testing a login function with username and password?",
+                        options: [
+                            "Statement coverage",
+                            "Equivalence partitioning and boundary value analysis",
+                            "Decision coverage",
+                            "State transition testing"
+                        ],
+                        correct: 1,
+                        explanation: "Equivalence partitioning and BVA are specification-based techniques ideal for input validation testing like login functions."
+                    },
+                    {
+                        question: "What is statement coverage?",
+                        options: [
+                            "Percentage of requirements covered by tests",
+                            "Percentage of executable statements executed by tests",
+                            "Percentage of test cases executed",
+                            "Percentage of defects found"
+                        ],
+                        correct: 1,
+                        explanation: "Statement coverage measures the percentage of executable statements in the code that have been exercised by tests."
+                    },
+                    {
+                        question: "State transition testing is most appropriate for:",
+                        options: [
+                            "Testing static web pages",
+                            "Testing systems with different states and transitions",
+                            "Testing database queries",
+                            "Testing user interface colors"
+                        ],
+                        correct: 1,
+                        explanation: "State transition testing is used for systems that can be in different states with transitions between them triggered by events."
+                    }
+                ],
+                advanced: [
+                    {
+                        question: "What is the relationship between statement and decision coverage?",
+                        options: [
+                            "They are the same",
+                            "100% decision coverage guarantees 100% statement coverage",
+                            "100% statement coverage guarantees 100% decision coverage",
+                            "They are unrelated"
+                        ],
+                        correct: 1,
+                        explanation: "100% decision coverage subsumes statement coverage - achieving full decision coverage ensures full statement coverage, but not vice versa."
+                    },
+                    {
+                        question: "In boundary value analysis, if valid input range is 10-100, what are the boundary values for three-point boundary value analysis?",
+                        options: [
+                            "10, 50, 100",
+                            "9, 10, 11, 99, 100, 101",
+                            "10, 100",
+                            "1, 10, 100, 1000"
+                        ],
+                        correct: 1,
+                        explanation: "Three-point BVA tests the boundary value and the values immediately below and above it: 9, 10, 11 (lower boundary) and 99, 100, 101 (upper boundary)."
+                    }
+                ]
+            },
+            "Managing Test Activities": {
+                beginner: [
+                    {
+                        question: "What is a test plan?",
+                        options: [
+                            "A list of test cases",
+                            "A document describing test objectives, resources, schedule, and approach",
+                            "A plan for fixing defects",
+                            "A schedule of when tests will run"
+                        ],
+                        correct: 1,
+                        explanation: "A test plan is a document describing the scope, approach, resources, and schedule of intended test activities, identifying test objectives and deliverables."
+                    },
+                    {
+                        question: "What is the purpose of entry criteria?",
+                        options: [
+                            "To define when developers can enter the test environment",
+                            "To define the conditions that must be met before testing can start",
+                            "To define test data entry requirements",
+                            "To define when users can enter the system"
+                        ],
+                        correct: 1,
+                        explanation: "Entry criteria define the conditions that must be satisfied before testing activities can begin, ensuring proper readiness."
+                    },
+                    {
+                        question: "What is test monitoring?",
+                        options: [
+                            "Watching testers work",
+                            "Gathering metrics about test progress and quality",
+                            "Monitoring the test environment",
+                            "Checking test case execution"
+                        ],
+                        correct: 1,
+                        explanation: "Test monitoring involves gathering metrics and information about test progress, resource usage, and test quality to support test control decisions."
+                    },
+                    {
+                        question: "What is a test summary report?",
+                        options: [
+                            "A summary of test cases",
+                            "A report created during test planning",
+                            "A report summarizing test activities and results",
+                            "A summary of defects only"
+                        ],
+                        correct: 2,
+                        explanation: "A test summary report provides a summary of the test activities and results, typically created at test completion milestones."
+                    }
+                ],
+                intermediate: [
+                    {
+                        question: "What is risk-based testing?",
+                        options: [
+                            "Testing that is very risky",
+                            "Prioritizing tests based on risk analysis",
+                            "Testing only high-risk features",
+                            "Testing to eliminate all risks"
+                        ],
+                        correct: 1,
+                        explanation: "Risk-based testing uses risk analysis to prioritize test activities, focusing effort on areas with higher risk (likelihood × impact)."
+                    },
+                    {
+                        question: "What is the difference between test estimation and test planning?",
+                        options: [
+                            "They are the same activity",
+                            "Estimation predicts effort/time; planning defines approach and schedule",
+                            "Estimation is done by managers; planning by testers",
+                            "Planning comes before estimation"
+                        ],
+                        correct: 1,
+                        explanation: "Test estimation predicts the effort, resources, and time needed for testing. Test planning uses estimates to define the overall test approach, resources, and schedule."
+                    },
+                    {
+                        question: "What is defect triage?",
+                        options: [
+                            "Fixing defects immediately",
+                            "The process of prioritizing and assigning defects",
+                            "Categorizing defects by severity only",
+                            "Deleting duplicate defects"
+                        ],
+                        correct: 1,
+                        explanation: "Defect triage is the process of reviewing, analyzing, prioritizing, and assigning defects to the appropriate person or team for resolution."
+                    }
+                ],
+                advanced: [
+                    {
+                        question: "Which factors typically influence test effort estimation?",
+                        options: [
+                            "Only the number of test cases",
+                            "Product, process, and people factors including complexity, quality of work products, team experience, and available tools",
+                            "Only the deadline and budget",
+                            "Only the size of the application"
+                        ],
+                        correct: 1,
+                        explanation: "Test effort is influenced by product characteristics (size, complexity, quality), process factors (stability, tools), and people factors (experience, skills)."
+                    }
+                ]
+            },
+            "Test Tools": {
+                beginner: [
+                    {
+                        question: "What is test automation?",
+                        options: [
+                            "Making testing faster",
+                            "Using software to perform or support test activities",
+                            "Automatic defect fixing",
+                            "Testing automation software"
+                        ],
+                        correct: 1,
+                        explanation: "Test automation is the use of software to perform or support test activities such as test management, design, execution, and result checking."
+                    },
+                    {
+                        question: "Which type of tool helps manage test cases and track test execution?",
+                        options: [
+                            "Test execution tool",
+                            "Test management tool",
+                            "Static analysis tool",
+                            "Performance testing tool"
+                        ],
+                        correct: 1,
+                        explanation: "Test management tools support test planning, monitoring, and control by managing test cases, tracking test execution, and reporting results."
+                    },
+                    {
+                        question: "What is the primary benefit of test automation?",
+                        options: [
+                            "It finds more defects than manual testing",
+                            "It is faster and can enable unattended execution",
+                            "It completely replaces manual testing",
+                            "It requires no maintenance"
+                        ],
+                        correct: 1,
+                        explanation: "Test automation's primary benefits include faster execution, repeatability, and the ability to run tests unattended, especially for regression testing."
+                    }
+                ],
+                intermediate: [
+                    {
+                        question: "What are the risks of test automation?",
+                        options: [
+                            "There are no risks",
+                            "Unrealistic expectations, initial costs, maintenance effort, and technical challenges",
+                            "Only the initial cost",
+                            "Only maintenance effort"
+                        ],
+                        correct: 1,
+                        explanation: "Test automation risks include unrealistic expectations about benefits, high initial investment, ongoing maintenance costs, technical challenges, and vendor dependencies."
+                    },
+                    {
+                        question: "What should be considered when selecting a test tool?",
+                        options: [
+                            "Only the price",
+                            "Compatibility with systems, usability, support, cost, and organizational needs",
+                            "Only vendor reputation",
+                            "Whatever tool the developers use"
+                        ],
+                        correct: 1,
+                        explanation: "Tool selection should consider organizational maturity, compatibility, ease of use, support, cost, training needs, and alignment with testing processes."
+                    },
+                    {
+                        question: "What is a pilot project in tool implementation?",
+                        options: [
+                            "Training pilots to use tools",
+                            "A small-scale trial to evaluate the tool before full deployment",
+                            "The first automated test",
+                            "A prototype of the tool"
+                        ],
+                        correct: 1,
+                        explanation: "A pilot project is a small-scale trial implementation to assess the tool's effectiveness, learn about tool use, and identify issues before organization-wide rollout."
+                    }
+                ],
+                advanced: [
+                    {
+                        question: "What is the test automation pyramid concept?",
+                        options: [
+                            "A ranking of test automation tools",
+                            "A strategy suggesting more unit tests, fewer integration tests, and even fewer UI tests",
+                            "The organizational hierarchy for automation",
+                            "A tool selection framework"
+                        ],
+                        correct: 1,
+                        explanation: "The test automation pyramid suggests having a large base of automated unit tests, fewer integration tests, and even fewer UI/end-to-end tests due to their increasing cost and maintenance needs."
+                    }
+                ]
+            }
+        };
+
+        function ISTQBMockTest() {
+            const [screen, setScreen] = useState('setup'); // setup, test, results
+            const [selectedTopic, setSelectedTopic] = useState('');
+            const [difficulty, setDifficulty] = useState('');
+            const [questionCount, setQuestionCount] = useState(20);
+            const [currentQuestions, setCurrentQuestions] = useState([]);
+            const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+            const [answers, setAnswers] = useState({});
+            const [showExplanation, setShowExplanation] = useState(false);
+            const [timer, setTimer] = useState(0);
+            const [testStartTime, setTestStartTime] = useState(null);
+
+            const topics = Object.keys(questionBank);
+
+            useEffect(() => {
+                let interval;
+                if (screen === 'test') {
+                    interval = setInterval(() => {
+                        setTimer(prev => prev + 1);
+                    }, 1000);
+                }
+                return () => clearInterval(interval);
+            }, [screen]);
+
+            const formatTime = (seconds) => {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            };
+
+            const startTest = () => {
+                let questionsPool = [];
+
+                if (selectedTopic === 'mixed') {
+                    // Get questions from all topics
+                    topics.forEach(topic => {
+                        if (difficulty && questionBank[topic][difficulty]) {
+                            questionsPool = [...questionsPool, ...questionBank[topic][difficulty].map(q => ({...q, topic}))];
+                        } else if (!difficulty) {
+                            // Mix all difficulties
+                            ['beginner', 'intermediate', 'advanced'].forEach(diff => {
+                                if (questionBank[topic][diff]) {
+                                    questionsPool = [...questionsPool, ...questionBank[topic][diff].map(q => ({...q, topic, difficulty: diff}))];
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    // Get questions from selected topic
+                    if (difficulty && questionBank[selectedTopic][difficulty]) {
+                        questionsPool = questionBank[selectedTopic][difficulty].map(q => ({...q, topic: selectedTopic}));
+                    } else if (!difficulty) {
+                        // Mix all difficulties for this topic
+                        ['beginner', 'intermediate', 'advanced'].forEach(diff => {
+                            if (questionBank[selectedTopic][diff]) {
+                                questionsPool = [...questionsPool, ...questionBank[selectedTopic][diff].map(q => ({...q, topic: selectedTopic, difficulty: diff}))];
+                            }
+                        });
+                    }
+                }
+
+                // Shuffle and select questions
+                const shuffled = questionsPool.sort(() => Math.random() - 0.5);
+                const selected = shuffled.slice(0, Math.min(questionCount, shuffled.length));
+
+                setCurrentQuestions(selected);
+                setAnswers({});
+                setCurrentQuestionIndex(0);
+                setTimer(0);
+                setTestStartTime(Date.now());
+                setScreen('test');
+            };
+
+            const selectAnswer = (optionIndex) => {
+                if (!showExplanation) {
+                    setAnswers({
+                        ...answers,
+                        [currentQuestionIndex]: optionIndex
+                    });
+                }
+            };
+
+            const nextQuestion = () => {
+                setShowExplanation(false);
+                if (currentQuestionIndex < currentQuestions.length - 1) {
+                    setCurrentQuestionIndex(currentQuestionIndex + 1);
+                } else {
+                    showResults();
+                }
+            };
+
+            const previousQuestion = () => {
+                setShowExplanation(false);
+                if (currentQuestionIndex > 0) {
+                    setCurrentQuestionIndex(currentQuestionIndex - 1);
+                }
+            };
+
+            const checkAnswer = () => {
+                setShowExplanation(true);
+            };
+
+            const showResults = () => {
+                setScreen('results');
+            };
+
+            const restartTest = () => {
+                setScreen('setup');
+                setSelectedTopic('');
+                setDifficulty('');
+                setQuestionCount(20);
+                setCurrentQuestions([]);
+                setCurrentQuestionIndex(0);
+                setAnswers({});
+                setShowExplanation(false);
+                setTimer(0);
+            };
+
+            const calculateResults = () => {
+                let correct = 0;
+                let incorrect = 0;
+                let unanswered = 0;
+
+                currentQuestions.forEach((question, index) => {
+                    if (answers[index] === undefined) {
+                        unanswered++;
+                    } else if (answers[index] === question.correct) {
+                        correct++;
+                    } else {
+                        incorrect++;
+                    }
+                });
+
+                const percentage = Math.round((correct / currentQuestions.length) * 100);
+                const passed = percentage >= 65; // ISTQB passing grade
+
+                return { correct, incorrect, unanswered, percentage, passed };
+            };
+
+            if (screen === 'setup') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>🎓 ISTQB Foundation Level Mock Test</h1>
+                            <p>Practice for your ISTQB Certification - Based on v4.0 Syllabus</p>
+                        </div>
+
+                        <div className="card">
+                            <div className="setup-section">
+                                <h3>Select Topic</h3>
+                                <div className="topic-grid">
+                                    {topics.map(topic => (
+                                        <button
+                                            key={topic}
+                                            className={`topic-btn ${selectedTopic === topic ? 'selected' : ''}`}
+                                            onClick={() => setSelectedTopic(topic)}
+                                        >
+                                            {topic}
+                                        </button>
+                                    ))}
+                                    <button
+                                        className={`topic-btn ${selectedTopic === 'mixed' ? 'selected' : ''}`}
+                                        onClick={() => setSelectedTopic('mixed')}
+                                    >
+                                        🔀 Mixed Topics
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="setup-section">
+                                <h3>Select Difficulty (Optional - Leave blank for mixed)</h3>
+                                <div className="difficulty-grid">
+                                    <button
+                                        className={`difficulty-btn ${difficulty === 'beginner' ? 'selected' : ''}`}
+                                        onClick={() => setDifficulty(difficulty === 'beginner' ? '' : 'beginner')}
+                                    >
+                                        📗 Beginner
+                                    </button>
+                                    <button
+                                        className={`difficulty-btn ${difficulty === 'intermediate' ? 'selected' : ''}`}
+                                        onClick={() => setDifficulty(difficulty === 'intermediate' ? '' : 'intermediate')}
+                                    >
+                                        📙 Intermediate
+                                    </button>
+                                    <button
+                                        className={`difficulty-btn ${difficulty === 'advanced' ? 'selected' : ''}`}
+                                        onClick={() => setDifficulty(difficulty === 'advanced' ? '' : 'advanced')}
+                                    >
+                                        📕 Advanced
+                                    </button>
+                                </div>
+                                {!difficulty && <p style={{marginTop: '10px', color: '#666', fontSize: '0.9rem'}}>✨ No difficulty selected - questions will be mixed from all levels</p>}
+                            </div>
+
+                            <div className="setup-section">
+                                <div className="question-count">
+                                    <label>Number of Questions</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="50"
+                                        value={questionCount}
+                                        onChange={(e) => setQuestionCount(parseInt(e.target.value) || 20)}
+                                    />
+                                </div>
+                            </div>
+
+                            <button
+                                className="start-btn"
+                                onClick={startTest}
+                                disabled={!selectedTopic}
+                            >
+                                Start Test
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (screen === 'test') {
+                const question = currentQuestions[currentQuestionIndex];
+                const userAnswer = answers[currentQuestionIndex];
+
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>🎓 ISTQB Mock Test</h1>
+                        </div>
+
+                        <div className="card">
+                            <div className="test-header">
+                                <div className="progress-info">
+                                    Question {currentQuestionIndex + 1} of {currentQuestions.length}
+                                </div>
+                                <div className="timer">⏱️ {formatTime(timer)}</div>
+                            </div>
+
+                            <div className="question-card">
+                                {question.difficulty && (
+                                    <span className={`badge ${question.difficulty}`}>
+                                        {question.difficulty.toUpperCase()}
+                                    </span>
+                                )}
+                                {question.topic && (
+                                    <div style={{color: '#666', fontSize: '0.9rem', marginBottom: '10px'}}>
+                                        📚 {question.topic}
+                                    </div>
+                                )}
+                                <div className="question-text">
+                                    {question.question}
+                                </div>
+
+                                <div className="options">
+                                    {question.options.map((option, index) => {
+                                        let className = 'option';
+                                        if (userAnswer === index) className += ' selected';
+                                        if (showExplanation) {
+                                            className += ' disabled';
+                                            if (index === question.correct) className += ' correct';
+                                            else if (userAnswer === index && index !== question.correct) className += ' incorrect';
+                                        }
+
+                                        return (
+                                            <div
+                                                key={index}
+                                                className={className}
+                                                onClick={() => selectAnswer(index)}
+                                            >
+                                                {String.fromCharCode(65 + index)}. {option}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {showExplanation && (
+                                    <div className="explanation">
+                                        <div className="explanation-title">
+                                            {userAnswer === question.correct ? '✅ Correct!' : '❌ Incorrect'}
+                                        </div>
+                                        <div>{question.explanation}</div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="navigation">
+                                <button
+                                    className="nav-btn secondary"
+                                    onClick={previousQuestion}
+                                    disabled={currentQuestionIndex === 0}
+                                >
+                                    ← Previous
+                                </button>
+                                {!showExplanation && userAnswer !== undefined && (
+                                    <button
+                                        className="nav-btn primary"
+                                        onClick={checkAnswer}
+                                    >
+                                        Check Answer
+                                    </button>
+                                )}
+                                {showExplanation && (
+                                    <button
+                                        className="nav-btn primary"
+                                        onClick={nextQuestion}
+                                    >
+                                        {currentQuestionIndex === currentQuestions.length - 1 ? 'Show Results' : 'Next →'}
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (screen === 'results') {
+                const results = calculateResults();
+
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>🎓 Test Results</h1>
+                        </div>
+
+                        <div className="card results-card">
+                            <h2>{results.passed ? '🎉 Congratulations!' : '📚 Keep Studying!'}</h2>
+                            <p style={{color: '#666', marginTop: '10px'}}>
+                                {results.passed 
+                                    ? 'You passed! You would pass the ISTQB exam (65% required)' 
+                                    : 'You need 65% to pass the ISTQB exam. Keep practicing!'}
+                            </p>
+
+                            <div className={`score-circle ${results.passed ? 'pass' : 'fail'}`}>
+                                {results.percentage}%
+                            </div>
+
+                            <div className="results-stats">
+                                <div className="stat">
+                                    <div className="stat-label">Correct</div>
+                                    <div className="stat-value" style={{color: '#10b981'}}>
+                                        {results.correct}
+                                    </div>
+                                </div>
+                                <div className="stat">
+                                    <div className="stat-label">Incorrect</div>
+                                    <div className="stat-value" style={{color: '#ef4444'}}>
+                                        {results.incorrect}
+                                    </div>
+                                </div>
+                                <div className="stat">
+                                    <div className="stat-label">Unanswered</div>
+                                    <div className="stat-value" style={{color: '#f59e0b'}}>
+                                        {results.unanswered}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="results-stats">
+                                <div className="stat">
+                                    <div className="stat-label">Total Questions</div>
+                                    <div className="stat-value">{currentQuestions.length}</div>
+                                </div>
+                                <div className="stat">
+                                    <div className="stat-label">Time Taken</div>
+                                    <div className="stat-value">{formatTime(timer)}</div>
+                                </div>
+                                <div className="stat">
+                                    <div className="stat-label">Topic</div>
+                                    <div className="stat-value" style={{fontSize: '1.2rem'}}>
+                                        {selectedTopic === 'mixed' ? '🔀' : selectedTopic.split(' ')[0]}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button className="start-btn" onClick={restartTest}>
+                                Take Another Test
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+        }
+
+        ReactDOM.render(<ISTQBMockTest />, document.getElementById('root'));
+    </script>
+</body>
+</html>
